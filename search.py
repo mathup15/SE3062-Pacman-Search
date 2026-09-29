@@ -5,7 +5,7 @@
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
 # 
-# Attribution Information: The Pacman AI projects were developed at UC Berkeley.
+# Attribution Information:  The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # Student side autograding was added by Brad Miller, Nick Hay, and
@@ -137,8 +137,35 @@ def breadthFirstSearch(problem: SearchProblem):
 
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    frontier = util.PriorityQueue()
+    startState = problem.getStartState()
+
+    frontier.push((startState, [], 0), 0)
+    bestCost = {startState: 0}
+
+    while not frontier.isEmpty():
+        state, actions, cost = frontier.pop()
+
+        if cost > bestCost.get(state, float("inf")):
+            continue
+
+        if problem.isGoalState(state):
+            return actions
+
+        for successor, action, stepCost in problem.getSuccessors(state):
+            newCost = cost + stepCost
+
+            if newCost < bestCost.get(successor, float("inf")):
+                bestCost[successor] = newCost
+                newActions = actions + [action]
+
+                frontier.push(
+                    (successor, newActions, newCost),
+                    newCost
+                )
+
+    return []
 
 def nullHeuristic(state, problem=None):
     """
@@ -149,8 +176,41 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    frontier = util.PriorityQueue()
+    startState = problem.getStartState()
+
+    frontier.push(
+        (startState, [], 0),
+        heuristic(startState, problem)
+    )
+
+    bestCost = {startState: 0}
+
+    while not frontier.isEmpty():
+        state, actions, cost = frontier.pop()
+
+        if cost > bestCost.get(state, float("inf")):
+            continue
+
+        if problem.isGoalState(state):
+            return actions
+
+        for successor, action, stepCost in problem.getSuccessors(state):
+            newCost = cost + stepCost
+
+            if newCost < bestCost.get(successor, float("inf")):
+                bestCost[successor] = newCost
+                newActions = actions + [action]
+
+                priority = newCost + heuristic(successor, problem)
+
+                frontier.push(
+                    (successor, newActions, newCost),
+                    priority
+                )
+
+    return []
 
 
 # Abbreviations
