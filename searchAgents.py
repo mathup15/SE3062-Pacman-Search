@@ -511,7 +511,16 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     maxDistance = 0
 
     for food in foodList:
-        distance = util.manhattanDistance(position, food)
+        pair = (position, food)
+
+        if pair not in problem.heuristicInfo:
+            problem.heuristicInfo[pair] = mazeDistance(
+                position,
+                food,
+                problem.startingGameState
+            )
+
+        distance = problem.heuristicInfo[pair]
 
         if distance > maxDistance:
             maxDistance = distance
